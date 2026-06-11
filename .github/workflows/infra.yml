@@ -1,0 +1,73 @@
+name: Infra (Bicep)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "infra/**"
+      - ".github/workflows/infra.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  AZURE_RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
+  AZURE_LOCATION: ${{ vars.AZURE_LOCATION }}
+  AZURE_BASE_NAME: ${{ vars.AZURE_BASE_NAME }}
+
+jobs:
+  provision:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Azure login
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Ensure resource group exists
+        uses: azure/cli@v2
+        with:
+          inlineScript: |
+            # The RG may be pre-created by an admin, with the deploying service
+            # principal scoped to just that RG (no subscription-level rights to
+            # create RGs). Try to create it; if that's not permitted, assume it
+            # already exists and let the RG-scoped deployment proceed.
+            az group create --name "$AZURE_RESOURCE_GROUP" --location "$AZURE_LOCATION" \
+              || echo "Could not create '$AZURE_RESOURCE_GROUP' (RG-scoped SP?) — assuming it already exists."
+
+      - name: Deploy Bicep
+        uses: azure/cli@v2
+        env:
+          FINNHUB_API_KEY: ${{ secrets.FINNHUB_API_KEY }}
+          CLAUDE_API_KEY: ${{ secrets.CLAUDE_API_KEY }}
+        with:
+          inlineScript: |
+            : "${FINNHUB_API_KEY:?FINNHUB_API_KEY secret is empty — add it under repo Settings → Secrets and variables → Actions}"
+            : "${CLAUDE_API_KEY:?CLAUDE_API_KEY secret is empty — add it under repo Settings → Secrets and variables → Actions}"
+            outputs=$(az deployment group create \
+              --resource-group "$AZURE_RESOURCE_GROUP" \
+              --name "infra-$GITHUB_RUN_NUMBER" \
+              --template-file infra/main.bicep \
+              --parameters infra/main.parameters.json \
+              --parameters baseName="$AZURE_BASE_NAME" \
+              --parameters finnhubApiKey="$FINNHUB_API_KEY" claudeApiKey="$CLAUDE_API_KEY" \
+              --query properties.outputs -o json)
+
+            funcName=$(echo "$outputs" | jq -r '.functionAppName.value')
+            host=$(echo "$outputs" | jq -r '.functionAppDefaultHostname.value')
+            swaProdHost=$(echo "$outputs" | jq -r '.staticWebAppProdHostname.value')
+
+            {
+              echo "## Infra deployed"
+              echo ""
+              echo "| Output | Value |"
+              echo "| --- | --- |"
+              echo "| Resource group | \`$AZURE_RESOURCE_GROUP\` |"
+              echo "| Function App | \`$funcName\` |"
+              echo "| Hostname | https://$host |"
+              echo "| Frontend (prod) | https://$swaProdHost |"
+            } >> "$GITHUB_STEP_SUMMARY"

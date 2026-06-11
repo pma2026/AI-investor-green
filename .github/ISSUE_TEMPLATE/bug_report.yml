@@ -1,0 +1,31 @@
+name: Bug report
+description: Report a bug. A maintainer adds the `bug` label to hand it to the auto-fixer.
+title: "[Bug]: "
+# Intentionally NO auto-label: a maintainer adds `bug` manually, which is the
+# trigger gate for .github/workflows/auto-fix-bug.yml.
+labels: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Nothing runs on submission — a maintainer adds the **`bug`** label when it's ready.
+        Just describe the problem; the triage agent will ask if it needs more.
+  - type: textarea
+    id: description
+    attributes:
+      label: What's wrong?
+      description: What happened, what you expected instead, and how to reproduce it. Paste any error/stack trace.
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area (optional)
+      options:
+        - Unsure
+        - Backend (agent / market data / trading / storage / HTTP)
+        - Frontend (dashboard)
+        - Infra / CI
+        - Docs
+    validations:
+      required: false
