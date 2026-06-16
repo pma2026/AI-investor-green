@@ -1,4 +1,4 @@
-# AI Portfolio Manager — agent guide
+# Green AI Portfolio Manager — agent guide
 
 Autonomous paper-trading demo: a Claude agent (Python Azure Function App) trades a
 $100K paper portfolio every weekday; a React SPA shows it. Operational facts
