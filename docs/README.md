@@ -1,6 +1,6 @@
 # Documentation
 
-This is the map of the AI Portfolio Manager docs. It is written for **two
+This is the map of the Green AI Portfolio Manager docs. It is written for **two
 audiences at once** — humans onboarding to the project, and AI agents making
 changes. Keep entries short and link out; this page should stay scannable.
 

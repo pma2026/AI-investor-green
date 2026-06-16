@@ -24,7 +24,7 @@ export default function App() {
   return (
     <div className="app">
       <header className="app-header">
-        <h1>AI Portfolio Manager</h1>
+        <h1>Green AI Portfolio Manager</h1>
         <span className="sub">Autonomous paper-trading demo</span>
       </header>
 
