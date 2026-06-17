@@ -326,4 +326,4 @@ def daily_agent_timer(timer: func.TimerRequest) -> None:
 @app.route(route="health", methods=["GET"])
 def health(req: func.HttpRequest) -> func.HttpResponse:
     """Liveness probe."""
-    return func.HttpResponse(json.dumps({"status": "ok", "world": "hello"}), mimetype="application/json", status_code=200)
+    return func.HttpResponse(json.dumps({"status": "ok", "hello": "world"}), mimetype="application/json", status_code=200)
