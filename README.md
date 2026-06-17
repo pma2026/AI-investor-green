@@ -1,4 +1,4 @@
-# Green AI Portfolio Manager
+# GREEN AI Portfolio Manager
 
 An autonomous, paper-trading portfolio manager built as a live GenAI demo. A
 Claude agent runs every weekday, scans a watchlist, decides trades, and writes
