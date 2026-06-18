@@ -71,7 +71,7 @@ def apply_trade(symbol, shares, price, side) -> dict:
 
     new_trade = pl.DataFrame(
         {
-            "date": [datetime.now().date()],
+            "date": [datetime.now()],
             "symbol": [symbol],
             "shares": [shares],
             "price": [price],

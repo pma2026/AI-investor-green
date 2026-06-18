@@ -10,3 +10,5 @@ export const pct = (n) => (n == null ? "—" : `${(n * 100).toFixed(2)}%`);
 export const num = (n) => (n == null ? "—" : n.toLocaleString("en-US"));
 
 export const signClass = (n) => (n == null ? "" : n > 0 ? "pos" : n < 0 ? "neg" : "");
+
+export const dt = (s) => (s == null ? "—" : String(s).slice(0, 16));

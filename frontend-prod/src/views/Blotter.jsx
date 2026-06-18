@@ -1,7 +1,7 @@
 import { getTrades } from "../api.js";
 import { useAsync } from "../components/useAsync.js";
 import { Loading, ErrorState, Empty } from "../components/States.jsx";
-import { usd, num } from "../components/format.js";
+import { usd, num, dt } from "../components/format.js";
 
 export default function Blotter() {
   const { data, loading, error } = useAsync(getTrades);
@@ -28,7 +28,7 @@ export default function Blotter() {
         <tbody>
           {sorted.map((t, i) => (
             <tr key={i}>
-              <td>{t.date}</td>
+              <td>{dt(t.date)}</td>
               <td>{t.symbol}</td>
               <td className={t.side === "BUY" ? "pos" : "neg"}>{t.side}</td>
               <td className="mono">{num(t.shares)}</td>
