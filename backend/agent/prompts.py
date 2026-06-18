@@ -60,6 +60,31 @@ def screening_user_prompt(rows: list[dict], positions: list[dict]) -> str:
     )
 
 
+def mandate_with_override(override: str | None) -> str:
+    """Return MANDATE with optional ad hoc rules appended (chat use)."""
+    if override and override.strip():
+        return f"{MANDATE}\n\nAD HOC PRAVIDLÁ (platia len pre túto inštrukciu, majú prednosť):\n{override.strip()}"
+    return MANDATE
+
+
+def chat_user_prompt(message: str, positions: list[dict], cash: float) -> str:
+    """User prompt for a single chat-driven turn. Same response format as deepdive."""
+    return (
+        f"Aktuálne pozície: {positions}\n"
+        f"Voľný cash: ${cash:.2f}\n\n"
+        f"Inštrukcia od používateľa: {message}\n\n"
+        "Vyžiadaj si potrebné dáta cez nástroje (fundamentals, news, quote, atď.). "
+        "Dodrž SIZING a EARNINGS RISK pravidlá z mandátu, pokiaľ ich inštrukcia explicitne neprepisuje.\n\n"
+        "FORMÁT ODPOVEDE — presne v tomto poradí:\n"
+        "1) NAJPRV kompaktný JSON blok IBA s obchodmi (reasoning max 1 veta), aby sa "
+        "neskrátil:\n"
+        '```json\n{"trades": [{"symbol": "SYM", "side": "BUY"/"SELL", "shares": N, '
+        '"reasoning": "1 veta"}]}\n```\n'
+        '   Ak nič neobchoduješ: {"trades": []}.\n'
+        "2) POTOM napíš stručné zdôvodnenie ako voľný text."
+    )
+
+
 def deepdive_user_prompt(symbols: list[str], portfolio: dict, cash: float) -> str:
     return (
         f"Hĺbková analýza pre: {', '.join(symbols)}.\n"
