@@ -37,7 +37,7 @@ def admin_init(req: func.HttpRequest) -> func.HttpResponse:
         # Trades: append-only ledger
         trades = pl.DataFrame(
             {
-                "date": pl.Series([], dtype=pl.Date),
+                "date": pl.Series([], dtype=pl.Datetime),
                 "symbol": pl.Series([], dtype=pl.Utf8),
                 "shares": pl.Series([], dtype=pl.Int64),
                 "price": pl.Series([], dtype=pl.Float64),

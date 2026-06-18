@@ -1,6 +1,6 @@
 # `papertrading` container — schemas
 
-Status: **current** · Last verified: 2026-06-09
+Status: **current** · Last verified: 2026-06-18
 
 All blobs are Parquet written by Polars. Column dtypes below are the **Polars
 dtypes set by [`/setup`](../../../backend/function_app.py)**; preserve them.
@@ -29,7 +29,7 @@ Read by `GET /api/portfolio` (with cash → `total_value`). Written by
 
 | Column | Dtype | Meaning |
 | --- | --- | --- |
-| `date` | Date | Trade date (`datetime.now().date()`). |
+| `date` | Datetime | Trade timestamp (`datetime.now()`). |
 | `symbol` | Utf8 | Ticker (uppercase). |
 | `shares` | Int64 | Shares transacted (> 0; always positive — direction is in `side`). |
 | `price` | Float64 | Execution price per share. |

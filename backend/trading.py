@@ -71,7 +71,7 @@ def apply_trade(symbol, shares, price, side) -> dict:
 
     new_trade = pl.DataFrame(
         {
-            "date": [datetime.now().date()],
+            "date": [datetime.now()],
             "symbol": [symbol],
             "shares": [shares],
             "price": [price],
@@ -79,6 +79,9 @@ def apply_trade(symbol, shares, price, side) -> dict:
         }
     )
     trades = read_parquet(CONTAINER, "trades.parquet")
+    # Defensive cast: files written before the Date→Datetime migration store date-only.
+    if trades["date"].dtype == pl.Date:
+        trades = trades.with_columns(pl.col("date").cast(pl.Datetime))
     write_parquet(CONTAINER, "trades.parquet", pl.concat([trades, new_trade], how="diagonal_relaxed"))
 
     cash_row = pl.DataFrame({"date": [datetime.now().date()], "amount": [round(new_cash, 2)]})

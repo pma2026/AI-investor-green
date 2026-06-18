@@ -56,7 +56,7 @@ class FakeBlobStore:
             schema={"symbol": pl.Utf8, "shares": pl.Int64,
                     "avg_cost": pl.Float64, "market_value": pl.Float64}))
         self.seed(CONTAINER, "trades.parquet", pl.DataFrame(
-            schema={"date": pl.Date, "symbol": pl.Utf8, "shares": pl.Int64,
+            schema={"date": pl.Datetime, "symbol": pl.Utf8, "shares": pl.Int64,
                     "price": pl.Float64, "side": pl.Utf8}))
         self.seed(CONTAINER, "cash_ledger.parquet",
                   pl.DataFrame({"date": [date.today()], "amount": [float(cash)]}))
