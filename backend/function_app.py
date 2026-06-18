@@ -9,6 +9,7 @@ from market.finnhub import FinnhubClient
 from storage.blobs import write_parquet, read_parquet
 from trading import apply_trade, TradeError
 from agent.loop import run_agent, snapshot_portfolio
+from agent.chat import run_chat
 
 
 app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)
@@ -291,6 +292,25 @@ def agent_run(req: func.HttpRequest) -> func.HttpResponse:
         return func.HttpResponse(json.dumps(result, default=str), mimetype="application/json", status_code=200)
     except Exception as e:
         logging.error(f"Agent run failed: {e}")
+        return func.HttpResponse(json.dumps({"error": str(e)}), status_code=500, mimetype="application/json")
+
+
+# ---- Chat: User-driven trading instruction ----
+
+
+@app.route(route="chat", methods=["POST"])
+def chat(req: func.HttpRequest) -> func.HttpResponse:
+    """Execute a user trading instruction via Claude. Body: {message, system_override?}.
+    Returns {reply, trades_executed, trades_skipped}."""
+    try:
+        body = req.get_json()
+        message = body.get("message", "").strip()
+        if not message:
+            return func.HttpResponse(json.dumps({"error": "message is required"}), status_code=400, mimetype="application/json")
+        result = run_chat(message, body.get("system_override"))
+        return func.HttpResponse(json.dumps(result, default=str), mimetype="application/json", status_code=200)
+    except Exception as e:
+        logging.error(f"Chat failed: {e}")
         return func.HttpResponse(json.dumps({"error": str(e)}), status_code=500, mimetype="application/json")
 
 

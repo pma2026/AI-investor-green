@@ -55,6 +55,18 @@ export async function getHistory() {
   return { series: stub.history(), isStub: true };
 }
 
+// ---- Chat: {reply, trades_executed:[{symbol,shares,price,side,cash,reasoning}], trades_skipped:[{trade,error}]}
+export async function sendChat(message, systemOverride = null) {
+  if (USE_STUBS) return stub.chat(message);
+  const res = await fetch(`${API_BASE}/chat`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ message, system_override: systemOverride || null }),
+  });
+  if (!res.ok) throw new Error(`/chat -> ${res.status} ${res.statusText}`);
+  return res.json();
+}
+
 export const usingStubs = USE_STUBS;
 
 // ---------------------------------------------------------------------------
@@ -184,4 +196,10 @@ const stub = {
     }
     return out;
   },
+
+  chat: (message) => ({
+    reply: `[Stub] Received: "${message}". Connect a backend to execute real trades.`,
+    trades_executed: [],
+    trades_skipped: [],
+  }),
 };
